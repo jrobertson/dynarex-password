@@ -93,3 +93,5 @@ In the following example a password lookup file is generated using random 1 or 2
     dp.dynarex.records['f'][:body][:value] #=> "N1"
 
     dp.save 'password_lookup.xml'
+
+Note: Make sure you keep your password lookup file private.
