@@ -1,4 +1,4 @@
-#Â!/usr/bin/env ruby
+#!/usr/bin/env ruby
 
 # file: dynarex-password.rb
 
@@ -35,7 +35,7 @@ class DynarexPassword
     end
     
     string = weak_password.split(//).map do |char|
-      dynarex.records[char][:body][:value]
+      char[/[0-9A-Za-z]/] ? dynarex.records[char][:body][:value] : char
     end
     
     string.join  
