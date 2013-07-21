@@ -12,7 +12,12 @@ class DynarexPassword
     super()
   end
   
-  def generate_lookup()
+  # if a fized size of 2 is passed in then each character will generate 
+  #   exactly 2 random alphanumeric characters
+  #
+  def generate_lookup(fixed_size=nil)
+    
+    @fixed_size = fixed_size
     @temp_list = []
     @dynarex = Dynarex.new('codes/code(index,value)')
 
@@ -40,15 +45,38 @@ class DynarexPassword
     
     string.join  
   end
+
+  # reverse_lookup can only be used with a lookup file which was generated 
+  #   with a fixed char length of 2
+  #
+  def reverse_lookup(password, file=nil)
+    
+    if file then
+      dynarex = Dynarex.new file
+    elsif @dynarex then
+      dynarex = @dynarex
+    else
+      return 'please supply a lookup file'
+    end
+    
+    h = dynarex.to_h.inject({}){|r, x| r.merge({x[:value] => x[:index]})}
+
+    string = password.split(//).each_slice(2).map do |chars|
+      h[chars.join]
+    end
+    
+    string.join  
+  end  
   
   def save(filepath)   @dynarex.save filepath, pretty: true   end
 
   private
         
-  def get_random_chars(size)
+  def get_random_chars(upper_size)
 
-    newpass = Array.new(rand(size)+1, '').map{@chars[rand(@chars.size)]}.join
-
+    size = @fixed_size ? @fixed_size : rand(upper_size)+1
+    newpass = Array.new(size, '').map{@chars[rand(@chars.size)]}.join
+    puts 'newpass : ' + newpass.inspect
     # return the encryption providing it doesn't already exist in the lookup table.
     return !@temp_list.include?(newpass) ? newpass : get_random_chars(size) 
 
