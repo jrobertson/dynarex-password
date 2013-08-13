@@ -61,11 +61,9 @@ class DynarexPassword
     
     h = dynarex.to_h.inject({}){|r, x| r.merge({x[:value] => x[:index]})}
 
-    string = password.split(//).each_slice(2).map do |chars|
-      h[chars.join]
-    end
-    
-    string.join  
+    password.split('-').map {|x| x.split(//).each_slice(2)
+                             .map {|chars| h[chars.join]}.join }.join '-'
+
   end  
   
   def save(filepath)   @dynarex.save filepath, pretty: true   end
@@ -76,7 +74,7 @@ class DynarexPassword
 
     size = @fixed_size ? @fixed_size : rand(upper_size)+1
     newpass = Array.new(size, '').map{@chars[rand(@chars.size)]}.join
-    puts 'newpass : ' + newpass.inspect
+
     # return the encryption providing it doesn't already exist in the lookup table.
     return !@temp_list.include?(newpass) ? newpass : get_random_chars(size) 
 

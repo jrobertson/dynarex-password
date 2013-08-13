@@ -61,8 +61,11 @@ class DynarexPassword
     
     h = dynarex.to_h.inject({}){|r, x| r.merge({x[:value] => x[:index]})}
 
-    password.split('-').map {|x| x.split(//).each_slice(2)
-                             .map {|chars| h[chars.join]}.join }.join '-'
+    password.split('-').map do |linex| 
+      linex.split('_').map do |x|
+        x.split(//).each_slice(2).map {|chars| h[chars.join]}.join 
+      end.join '_'
+    end.join '-'
 
   end  
   
