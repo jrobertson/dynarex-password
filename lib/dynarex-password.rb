@@ -69,7 +69,7 @@ class DynarexPassword
 
   end  
   
-  def save(filepath)   @dynarex.save filepath, pretty: true   end
+  def save(filepath)   @dynarex.save filepath  end
 
   private
         
