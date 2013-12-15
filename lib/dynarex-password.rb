@@ -46,6 +46,8 @@ class DynarexPassword
     string.join  
   end
 
+  alias encrypt lookup
+
   # reverse_lookup can only be used with a lookup file which was generated 
   #   with a fixed char length of 2
   #
@@ -67,9 +69,11 @@ class DynarexPassword
       end.join '_'
     end.join '-'
 
-  end  
+  end
+
+  alias decrypt reverse_lookup  
   
-  def save(filepath)   @dynarex.save filepath  end
+  def save(filepath)   @dynarex.save filepath end
 
   private
         
