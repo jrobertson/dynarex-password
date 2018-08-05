@@ -62,7 +62,7 @@ class DynarexPassword
       raise 'dynarex-password: please supply a lookup file'
     end
     
-    h = dx.to_h.inject({}){|r, x| r.merge({x[:value] => x[:index]})}
+    h = dx.to_a.inject({}){|r, x| r.merge({x[:value] => x[:index]})}
 
     password.split('-').map do |linex| 
       linex.split('_').map do |x|
