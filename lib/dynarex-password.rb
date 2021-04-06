@@ -5,28 +5,36 @@
 require 'dynarex'
 
 class DynarexPassword
+  using ColouredText
 
   attr_reader :dx
 
-  def initialize()
+  def initialize(debug: false)
+    
+    @debug = debug
+    puts 'inside DynarexPassword::initialize'.info if debug
     super()
   end
   
   # if a fized size of 2 is passed in then each character will generate 
   #   exactly 2 random alphanumeric characters
   #
-  def generate_lookup(fixed_size: nil)
-    
-    @fixed_size = fixed_size
+  def generate_lookup(fixed_size: 2)
+        
     @temp_list = []
-    @dx = Dynarex.new('codes/code(index,value)')
+    @dx = Dynarex.new('codes[fixedsize]/code(index,value)')
+    @dx.fixedsize = @fixed_size = fixed_size
 
     chars =  (0..9).to_a  + Array.new(7) + ('A'..'Z').to_a \
                                                + Array.new(6) + ('a'..'z').to_a
     @chars = (0..9).to_a  + ('A'..'Z').to_a + ('a'..'z').to_a 
 
     chars.each do |char|
-      @dx.create index: char, value: get_random_chars(2) if char
+      
+      s = get_random_chars(2)
+      @temp_list << s
+      @dx.create index: char, value: s if char
+      
     end    
   end
   
@@ -37,7 +45,7 @@ class DynarexPassword
     elsif @dx
       @dx
     else
-      raise 'dynarex-password: please supply a lookup file'
+      raise 'dynarex-password: please supply a lookup file'.error
     end
     
     chars = weak_password.split(//).map do |char|
@@ -59,14 +67,17 @@ class DynarexPassword
     elsif @dx
       @dx
     else
-      raise 'dynarex-password: please supply a lookup file'
+      raise 'dynarex-password: please supply a lookup file'.error
     end
+    
+    fixed_size = (dx.summary[:fixedsize] || 2).to_i
+    puts 'fixed_size: ' +fixed_size.inspect if @debug
     
     h = dx.to_a.inject({}){|r, x| r.merge({x[:value] => x[:index]})}
 
     password.split('-').map do |linex| 
       linex.split('_').map do |x|
-        x.split(//).each_slice(2).map {|chars| h[chars.join]}.join 
+        x.split(//).each_slice(fixed_size).map {|chars| h[chars.join]}.join 
       end.join '_'
     end.join '-'
 
