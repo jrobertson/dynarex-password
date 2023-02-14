@@ -4,6 +4,9 @@
 
 require 'dynarex'
 
+class DynarexPasswordError < Exception
+end
+
 class DynarexPassword
   using ColouredText
 
@@ -25,17 +28,22 @@ class DynarexPassword
     @dx = Dynarex.new('codes[fixedsize]/code(index,value)')
     @dx.fixedsize = @fixed_size = fixed_size
 
-    chars =  (0..9).to_a  + Array.new(7) + ('A'..'Z').to_a \
-                                               + Array.new(6) + ('a'..'z').to_a
+    #chars =  (0..9).to_a  + Array.new(7) + ('A'..'Z').to_a \
+    #                                           + Array.new(6) + ('a'..'z').to_a
     @chars = (0..9).to_a  + ('A'..'Z').to_a + ('a'..'z').to_a 
 
-    chars.each do |char|
+    @chars.each do |char|
       
       s = get_random_chars(2)
       @temp_list << s
-      @dx.create index: char, value: s if char
+      @dx.create({index: char, value: s}) if char
       
     end    
+    
+    # ensure the values are unique
+    values = @dx.all.map(&:value)
+    raise DynarexPasswordError, 'Values are not uniqe!' if values != values.uniq
+    
   end
   
   def lookup(weak_password, file=nil)
